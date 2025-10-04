@@ -1,7 +1,15 @@
+import NavBar from "./NavBar.jsx";
+
 export default function PacientePage() {
     return (
-        <div>
-            <h1>Paciente Page</h1>
-        </div>
+        <header>
+            <NavBar />
+            <Form />
+        </header>
     )
+}
+
+const Form = () => {
+    <form>
+    </form>
 }

@@ -1,4 +1,6 @@
+import React, { useEffect } from "react";
 import NavBar from "./NavBar.jsx";
+import axios from "axios";
 
 const agendamentosFetchInit = 'AGENDAMENTOS_FETCH_INIT'
 const agendamentosFetchSuccess = 'AGENDAMENTOS_FETCH_SUCCESS'
@@ -19,6 +21,21 @@ const agendamentosReducer = (state,action) => {
 }
 
 export default function PacientPage() {
+    const [agendamentos, dispatchAgendamentos] = React.useReducer(agendamentosReducer, {data:[],isLoading:false,isError:false});
+
+    useEffect(() => {
+      dispatchAgendamentos({ type: agendamentosFetchInit });;
+      axios.get(AGENDAMENTOS_QUERY, { headers: { 'ngrok-skip-browser-warning': '1' } })
+           .then((result) => {
+              dispatchAgendamentos({ type: agendamentosFetchSuccess, payload: result.data });
+           })
+           .catch(() =>{
+            dispatchAgendamentos({ type: agendamentosFetchFailure });
+           })
+    }, []);
+
+    console.log(agendamentos);
+     
     return (
         <>
         <header>
@@ -40,6 +57,9 @@ export default function PacientPage() {
             
         </form>
         <section className="bg-white rounded-xl my-20">
+            <h2 className="text-center text-3xl text-black mt-5">AGENDAMENTOS</h2>
+            <p className="text-center text-xl text-black mt-5">Abaixo estão listados todos os seus agendamentos</p>
+            
         </section>
         </>
     )

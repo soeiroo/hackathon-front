@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/LoginForm.module.css';
 import { useNavigate } from 'react-router';
-import axios from 'axios';
+import { addUser, loginByCpf, resetPassword as resetPwd } from '../utils/apiClient';
+import { MOCK_DOCTOR, MOCK_PATIENT } from '../utils/mockUsers';
 
 
 function LoginRegisterForm (){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [phone, setPhone] = useState('');
   const [isRegister, setIsRegister] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  // using apiClient directly
+  const user = null;
   
   const navigate = useNavigate();
   useEffect(() => {
@@ -35,31 +42,48 @@ function LoginRegisterForm (){
   }
 
 
-  const API_BASE = import.meta.env.VITE_API_BASE || '/api';
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage('');
+    setError('');
     try {
       if (isRegister) {
-        const res = await axios.post(`${API_BASE}/auth/register`, { email, password });
-        // assume API returns created user or message
-        alert(res.data?.message || 'Cadastro realizado com sucesso');
+        const payload = { nome, email, cpf, phone, password };
+        const res = await addUser(payload);
+        setMessage(res?.message || 'Cadastro realizado com sucesso');
         setIsRegister(false);
+        // clear fields after successful register
+        setNome('');
+        setCpf('');
+        setPhone('');
       } else {
-        const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
-        // assume API returns user data and token
-        const returnedUser = res.data?.user || null;
-        setUser(returnedUser);
-        if (res.data?.token) {
-          // store token in localStorage for authenticated requests
-          localStorage.setItem('token', res.data.token);
-        }
+        const res = await loginByCpf(cpf, password);
+        setMessage(res?.message || 'Login realizado.');
       }
     } catch (error) {
       console.error('Error during authentication:', error);
-      const message = error?.response?.data?.message || error.message || 'Erro na autenticação';
-      alert('Authentication error: ' + message);
+      const msg = error?.response?.data?.message || error.message || 'Erro na autenticação';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMockLogin = async (who) => {
+    setLoading(true);
+    setError('');
+    setMessage('');
+    try {
+      const creds = who === 'doctor' ? MOCK_DOCTOR : MOCK_PATIENT;
+      setCpf(creds.cpf);
+      setPassword(creds.password);
+      const res = await loginByCpf(creds.cpf, creds.password);
+      setMessage(res?.message || `Logado como ${creds.nome}`);
+    } catch (err) {
+      console.error('Mock login failed', err);
+      const msg = err?.response?.data?.message || err?.message || 'Erro no login (mock)';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -68,14 +92,16 @@ function LoginRegisterForm (){
   const handleReset = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage('');
+    setError('');
     try {
-      const res = await axios.post(`${API_BASE}/auth/reset-password`, { email: resetEmail });
-      alert(res.data?.message || 'E-mail de reset enviado!');
+  const res = await resetPwd(resetEmail);
+  setMessage(res?.message || 'E-mail de reset enviado!');
       setShowReset(false);
       setResetEmail('');
     } catch (error) {
-      const message = error?.response?.data?.message || error.message || 'Erro ao enviar e-mail de reset';
-      alert('Erro ao enviar e-mail de reset: ' + message);
+      const msg = error?.response?.data?.message || error.message || 'Erro ao enviar e-mail de reset';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -83,20 +109,73 @@ function LoginRegisterForm (){
 
   return (
     <div className={styles.container}>
+      {message && <p className={styles['success-message']}>{message}</p>}
+      {error && <p className={styles['error-message']}>{error}</p>}
       {!showReset ? (
         <form onSubmit={handleSubmit} className={styles['login-box']}>
           <h2 className={styles['login-title']}>{isRegister ? "Criar Conta" : "Login"}</h2>
-          <div className={styles['input-group']}>
-            <label htmlFor='email'>Email:</label>
-            <input 
-              type='email' 
-              id='email' 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
-              className={styles['input']}
-            />
-          </div>
+          {isRegister && (
+            <div className={styles['two-col']}>
+              <div className={styles['input-group']}>
+                <label htmlFor='nome'>Nome:</label>
+                <input
+                  type='text'
+                  id='nome'
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  required
+                  className={styles['input']}
+                />
+              </div>
+              <div className={styles['input-group']}>
+                <label htmlFor='cpf'>CPF:</label>
+                <input
+                  type='text'
+                  id='cpf'
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value)}
+                  required
+                  className={styles['input']}
+                />
+              </div>
+              <div className={styles['input-group']}>
+                <label htmlFor='phone'>Telefone:</label>
+                <input
+                  type='tel'
+                  id='phone'
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                  className={styles['input']}
+                />
+              </div>
+              <div className={styles['input-group']}>
+                <label htmlFor='registerEmail'>Email:</label>
+                <input 
+                  type='email' 
+                  id='registerEmail' 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  required 
+                  className={styles['input']}
+                />
+              </div>
+            </div>
+          )}
+            {!isRegister && (
+              <div className={styles['input-group']}>
+                <label htmlFor='cpf'>CPF:</label>
+                <input
+                  type='text'
+                  id='cpf'
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value)}
+                  required
+                  className={styles['input']}
+                />
+              </div>
+            )}
+            {/* email input is included in the two-col registration block above */}
           <div className={styles['input-group']}>
             <label htmlFor='password'>Password:</label>
             <input 
@@ -111,6 +190,14 @@ function LoginRegisterForm (){
           <button type='submit' className={styles['login-button']}>
             {isRegister ? "Cadastrar" : "Entrar"}
           </button>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <button type='button' className={styles['login-button']} onClick={() => handleMockLogin('doctor')}>
+              Entrar como Médico (mock)
+            </button>
+            <button type='button' className={styles['login-button']} onClick={() => handleMockLogin('patient')}>
+              Entrar como Paciente (mock)
+            </button>
+          </div>
           <p className={styles['signup-text']}>
             {isRegister ? "Já tem uma conta?" : "Não tem uma conta?"}{" "}
             <span onClick={() => setIsRegister(!isRegister)}>

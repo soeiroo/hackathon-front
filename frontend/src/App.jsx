@@ -1,26 +1,12 @@
 import { Routes, Route, Link } from 'react-router';
+import HomePage from './components/HomePage';
 
-const App = () => {
-    return (
-     <>
-        <SideBar />
-
-        <Routes>
-            <Route path="paciente" element={<Paciente />} />
-            <Route path="doutor" element={<Doutor />} />
-        </Routes>
-    </>
-    )
-}
-
-
-const SideBar = () => {
-    return (
-        <nav>
-            <Link to="/paciente">Paciente</Link>
-            <Link to="/doutor">Doutor</Link>
-        </nav>
-    )
+function App() {
+  return (
+    <Routes>
+        <Route path="/" element={<HomePage />} />
+    </Routes>
+  );
 }
 
 export default App;

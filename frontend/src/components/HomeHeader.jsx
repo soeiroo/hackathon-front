@@ -10,7 +10,7 @@ function HomeHeader() {
         </div>
         <ul>
           <div className='PortalSection'>
-            <Link to="/atendente/login" className='PortalButton'>
+            <Link to="/login" className='PortalButton'>
               Portal
             </Link>
           </div>

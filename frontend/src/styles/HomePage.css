@@ -53,6 +53,15 @@ body {
     0 0 10px rgba(0, 0, 0, 0.5);
 }
 
+@media (max-width: 992px) {
+    .HomeContent {
+        align-items: center;
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.2em;
+    }
+}
+
 /* Responsivo */
 @media (max-width: 768px) {
   .HomeContent {

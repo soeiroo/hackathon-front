@@ -157,7 +157,7 @@ header {
 .PortalButton {
   background: linear-gradient(135deg, #0f1012c4 0%, #51545b 100%);
   color: white;
-  padding: 10px 25px;
+  padding: 16px 28px;
   border-radius: 20px;
   text-decoration: none;
   font-size: 14px;
@@ -205,8 +205,9 @@ header {
   }
   
   .TopHeader {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
   }
   
   .PortalSection {
@@ -214,8 +215,8 @@ header {
   }
   
   .PortalButton {
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 13px 26px;
+    font-size: 16px;
   }
 }
 

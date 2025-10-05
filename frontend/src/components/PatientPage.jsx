@@ -199,7 +199,6 @@ export default function PacientPage() {
                     <p className="font-medium">
                       {item.data} às {item.hora}
                     </p>
-                    <p className="text-sm text-gray-600">{item.motivo}</p>
                   </div>
 
                   <div className="flex items-center gap-2">

@@ -70,7 +70,7 @@ function LoginRegisterForm() {
         <form onSubmit={handleSubmit} className={styles['login-box']}>
           <h2 className={styles['login-title']}>{isRegister ? "Criar Conta" : "Login"}</h2>
 
-          {isRegister && (
+          {/* {isRegister && (
             <div className={styles['two-col']}>
               <div className={styles['input-group']}>
                 <label htmlFor='nome'>Nome:</label>
@@ -89,39 +89,39 @@ function LoginRegisterForm() {
                 <input type='email' id='registerEmail' value={email} onChange={(e) => setEmail(e.target.value)} required className={styles.input}/>
               </div>
             </div>
-          )}
+          )} */}
 
-          {!isRegister && (
+          {/* {!isRegister && (
             <div className={styles['input-group']}>
               <label htmlFor='cpf'>CPF:</label>
               <input type='text' id='cpf' value={cpf} onChange={(e) => setCpf(e.target.value)} required className={styles.input}/>
             </div>
-          )}
+          )} */}
 
-          <div className={styles['input-group']}>
+          {/* <div className={styles['input-group']}>
             <label htmlFor='password'>Senha:</label>
             <input type='password' id='password' value={password} onChange={(e) => setPassword(e.target.value)} required className={styles.input}/>
-          </div>
+          </div> */}
 
-          <button type='submit' className={styles['login-button']}>
+          {/* <button type='submit' className={styles['login-button']}>
             {isRegister ? "Cadastrar" : "Entrar"}
-          </button>
+          </button> */}
 
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <button type='button' className={styles['login-button']} onClick={() => handleMockLogin('doctor')}>Médico</button>
             <button type='button' className={styles['login-button']} onClick={() => handleMockLogin('patient')}>Paciente</button>
           </div>
 
-          <p className={styles['signup-text']}>
+          {/* <p className={styles['signup-text']}>
             {isRegister ? "Já tem uma conta?" : "Não tem uma conta?"}{" "}
             <span className={styles['signup-link']} onClick={() => setIsRegister(!isRegister)}>
               {isRegister ? "Entrar" : "Cadastrar"}
             </span>
-          </p>
+          </p> */}
 
-          <p className={styles['signup-text']}>
+          {/* <p className={styles['signup-text']}>
             <span className={styles['signup-link']} onClick={() => setShowReset(true)}>Esqueceu a senha?</span>
-          </p>
+          </p> */}
         </form>
       ) : (
         <form className={styles['login-box']} onSubmit={() => {}}>

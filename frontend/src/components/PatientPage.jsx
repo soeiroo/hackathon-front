@@ -7,6 +7,7 @@ import {
   FaMapMarkerAlt,
   FaClipboard,
   FaTrash,
+  FaInfoCircle,
 } from "react-icons/fa";
 
 const initialState = {
@@ -38,7 +39,6 @@ export default function PacientPage() {
     agendamentosReducer,
     initialState
   );
-
   const [form, setForm] = useState({
     data: "",
     hora: "",
@@ -46,6 +46,7 @@ export default function PacientPage() {
     observacoes: "",
     localidade: "Hospital Regional - Centro",
   });
+  const [detalheAberto, setDetalheAberto] = useState(null); // ID do agendamento aberto
 
   const patientName = "Úrsula"; // nome mockado
 
@@ -69,15 +70,12 @@ export default function PacientPage() {
       nomepaciente: patientName,
       confirmado: false,
     };
-
     const stored = JSON.parse(localStorage.getItem("agendamentos")) || [];
     localStorage.setItem("agendamentos", JSON.stringify([novo, ...stored]));
-
     dispatchAgendamentos({
       type: "FETCH_SUCCESS",
       payload: [novo, ...agendamentos.data],
     });
-
     setForm({
       data: "",
       hora: "",
@@ -92,6 +90,7 @@ export default function PacientPage() {
     const updated = stored.filter((a) => a.id !== id);
     localStorage.setItem("agendamentos", JSON.stringify(updated));
     dispatchAgendamentos({ type: "REMOVE_AGENDAMENTO", payload: id });
+    setDetalheAberto(null); // fecha modal se estiver aberto
   };
 
   return (
@@ -149,9 +148,7 @@ export default function PacientPage() {
             <FaMapMarkerAlt className="text-gray-500" />
             <select
               value={form.localidade}
-              onChange={(e) =>
-                setForm({ ...form, localidade: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, localidade: e.target.value })}
               className="flex-1 outline-none bg-transparent text-gray-700"
             >
               <option>Hospital Regional - Centro</option>
@@ -166,9 +163,7 @@ export default function PacientPage() {
             <textarea
               placeholder="Observações adicionais"
               value={form.observacoes}
-              onChange={(e) =>
-                setForm({ ...form, observacoes: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
               className="flex-1 outline-none text-gray-700 resize-none"
               rows={3}
             />
@@ -199,14 +194,15 @@ export default function PacientPage() {
                   key={item.id}
                   className="border rounded-lg p-3 flex flex-col md:flex-row justify-between items-center gap-2"
                 >
+                  {/* Resumo */}
                   <div className="flex flex-col">
                     <p className="font-medium">
                       {item.data} às {item.hora}
                     </p>
                     <p className="text-sm text-gray-600">{item.motivo}</p>
                   </div>
+
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-gray-500">{item.localidade}</p>
                     <span
                       className={`text-xs font-semibold px-2 py-1 rounded-full ${
                         item.confirmado
@@ -216,12 +212,15 @@ export default function PacientPage() {
                     >
                       {item.confirmado ? "Confirmado" : "A Confirmar"}
                     </span>
+
+                    {/* Botão detalhes */}
                     <button
-                      onClick={() => handleCancelar(item.id)}
-                      className="text-red-600 hover:text-red-800 text-sm px-2 py-1 border border-red-600 rounded-lg transition"
+                      onClick={() => setDetalheAberto(item)}
+                      className="text-blue-600 hover:text-blue-800 text-sm px-2 py-1 border border-blue-600 rounded-lg transition flex items-center gap-1"
                     >
-                      <div  className="flex items-center gap-1"><FaTrash /> <span>Cancelar</span></div>
+                      <FaInfoCircle /> <span>Detalhes</span>
                     </button>
+
                   </div>
                 </li>
               ))}
@@ -229,6 +228,34 @@ export default function PacientPage() {
           )}
         </div>
       </div>
+
+      {/* Modal de detalhes */}
+      {detalheAberto && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+            <button
+              onClick={() => setDetalheAberto(null)}
+              className="absolute top-3 right-4 text-gray-500 hover:text-black text-2xl"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Detalhes do Agendamento</h2>
+            <p><strong>Paciente:</strong> {detalheAberto.nomepaciente}</p>
+            <p><strong>Data:</strong> {detalheAberto.data}</p>
+            <p><strong>Hora:</strong> {detalheAberto.hora}</p>
+            <p><strong>Motivo:</strong> {detalheAberto.motivo}</p>
+            <p><strong>Localidade:</strong> {detalheAberto.localidade}</p>
+            <p><strong>Observações:</strong> {detalheAberto.observacoes || "-"}</p>
+
+            <button
+              onClick={() => handleCancelar(detalheAberto.id)}
+              className="mt-4 w-full bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+            >
+              Cancelar Agendamento
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

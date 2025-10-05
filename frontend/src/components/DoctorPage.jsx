@@ -1,6 +1,15 @@
 import NavBar from "./DoctorNavBar.jsx";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  FaClock,
+  FaMapMarkerAlt,
+  FaCheck,
+  FaCar,
+  FaWheelchair,
+  FaSearch,
+  FaCheckCircle
+} from "react-icons/fa";
 
 // --- Pacientes ---
 const pacientsFetchInit = "PACIENTS_FETCH_INIT";
@@ -40,24 +49,13 @@ const driversReducer = (state, action) => {
   }
 };
 
-// --- Mock de Rotas Sobral ---
-const mockRotas = [
-  { id: 1, origem: "Centro", destino: "Bonfim", horario: "08:00 - 08:30", motorista: "Carlos", status: "Disponível" },
-  { id: 2, origem: "Pantanal", destino: "Sumaré", horario: "08:30 - 09:00", motorista: "Maria", status: "Em rota" },
-  { id: 3, origem: "Junco", destino: "Cohab", horario: "09:00 - 09:30", motorista: "João", status: "Ocupado" },
-  { id: 4, origem: "Bonfim", destino: "Taperuaba", horario: "09:30 - 10:00", motorista: "Ana", status: "Disponível" },
-  { id: 5, origem: "Sumaré", destino: "Centro", horario: "10:00 - 10:30", motorista: "Pedro", status: "Disponível" },
-  { id: 6, origem: "Cohab", destino: "Pantanal", horario: "10:30 - 11:00", motorista: "Lucas", status: "Em rota" },
-  { id: 7, origem: "Taperuaba", destino: "Junco", horario: "11:00 - 11:30", motorista: "Fernanda", status: "Disponível" },
-];
-
 // --- Modal ---
 function Modal({ isOpen, onClose, children }) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md relative animate-fade-in">
+      <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-lg relative animate-fade-in">
         <button
           onClick={onClose}
           className="absolute top-3 right-4 text-gray-500 hover:text-black text-2xl"
@@ -85,8 +83,9 @@ export default function DoctorPage() {
   });
 
   const [isOpen, setIsOpen] = useState(false);
-  const [notification, setNotification] = useState(false);
-  const [activeTab, setActiveTab] = useState("agendamentos");
+  const [notification, setNotification] = useState(null);
+  const [searchDriver, setSearchDriver] = useState("");
+  const [selectedPacient, setSelectedPacient] = useState(null); // paciente selecionado
 
   // --- Fetch Pacientes ---
   useEffect(() => {
@@ -113,10 +112,25 @@ export default function DoctorPage() {
   // --- Escolher motorista ---
   const escolherMotorista = (driver) => {
     setIsOpen(false);
-    setNotification(true);
+
+    if (selectedPacient) {
+      setNotification(
+        `Paciente ${selectedPacient.nomepaciente} com motorista ${driver.nome} escolhido!`
+      );
+      setSelectedPacient(null);
+    }
+
+    setTimeout(() => setNotification(null), 3000);
     console.log(`Motorista escolhido: ${driver.nome}`);
-    setTimeout(() => setNotification(false), 3000);
   };
+
+  // --- Filtragem e ordenação dos motoristas ---
+  const filteredDrivers = drivers.data
+    .filter((d) => d.nome.toLowerCase().includes(searchDriver.toLowerCase()))
+    .sort((a, b) => {
+      const statusOrder = { "Disponível": 0, "Em rota": 1, "Ocupado": 2 };
+      return (statusOrder[a.status] || 3) - (statusOrder[b.status] || 3);
+    });
 
   return (
     <>
@@ -124,133 +138,106 @@ export default function DoctorPage() {
         <NavBar />
       </header>
 
-      <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-6">
+      <main className="min-h-screen bg-gradient-to-br from-[#f0f4f8] to-[#e0e7ef] py-12 px-6">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-3xl font-bold text-slate-800 mb-8 text-center">
+          <h1 className="text-3xl font-bold text-[#1a3f6e] mb-8 text-center">
             Painel de Controle
           </h1>
 
-          {/* --- Abas --- */}
-          <div className="flex justify-center gap-4 mb-6">
-            <button
-              onClick={() => setActiveTab("agendamentos")}
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                activeTab === "agendamentos"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
-              }`}
-            >
-              Agendamentos
-            </button>
-            <button
-              onClick={() => setActiveTab("rotas")}
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                activeTab === "rotas"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
-              }`}
-            >
-              Rotas
-            </button>
-          </div>
-
-          {/* --- Conteúdo das abas --- */}
-          {activeTab === "agendamentos" && (
-            <>
-              {pacients.isLoading ? (
-                <p className="text-center text-gray-500">Carregando agendamentos...</p>
-              ) : pacients.isError ? (
-                <p className="text-center text-red-500">Erro ao carregar agendamentos.</p>
-              ) : (
-                <div className="space-y-5">
-                  {pacients.data.slice(0, 7).map((pacient) => (
-                    <div
-                      key={pacient.id}
-                      className="bg-white rounded-xl shadow-md px-8 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-100 hover:shadow-lg transition"
-                    >
-                      <div className="flex flex-col">
-                        <span className="font-bold text-lg text-gray-800">
-                          {pacient.nomepaciente}
-                        </span>
-                        <div className="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
-                          <p className="flex items-center gap-1">🕒 {pacient.horario || "08:30 - 09:30"}</p>
-                          <p className="flex items-center gap-1">📍 {pacient.localidade || "Hospital Regional - Centro"}</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => setIsOpen(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2 transition"
-                      >
-                        CONFIRMAR
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {activeTab === "rotas" && (
-            <div className="space-y-4">
-              {mockRotas.map((rota) => {
-                let statusColor = "bg-green-500";
-                if (rota.status === "Em rota") statusColor = "bg-yellow-500";
-                if (rota.status === "Ocupado") statusColor = "bg-red-500";
-
-                return (
-                  <div
-                    key={rota.id}
-                    className="bg-white rounded-xl shadow-md px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-100 hover:shadow-lg transition"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-gray-800 text-lg">
-                        {rota.origem} → {rota.destino}
-                      </span>
-                      <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-600">
-                        <p className="flex items-center gap-1">🕒 {rota.horario}</p>
-                        <p className="flex items-center gap-1">🚗 {rota.motorista}</p>
-                        <p className="flex items-center gap-1">
-                          ⚡
-                          <span className={`px-2 py-0.5 rounded text-white text-xs ${statusColor}`}>
-                            {rota.status}
-                          </span>
+          {/* --- Agendamentos --- */}
+          {pacients.isLoading ? (
+            <p className="text-center text-gray-500">Carregando agendamentos...</p>
+          ) : pacients.isError ? (
+            <p className="text-center text-red-500">Erro ao carregar agendamentos.</p>
+          ) : (
+            <div className="space-y-5">
+              {pacients.data.slice(0, 7).map((pacient) => (
+                <div
+                  key={pacient.id}
+                  className="bg-white rounded-xl shadow-md px-8 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-100 hover:shadow-lg transition"
+                >
+                  <div className="flex flex-col gap-2">
+                    <span className="font-bold text-lg text-[#1a3f6e]">
+                      {pacient.nomepaciente}
+                    </span>
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                      <p className="flex items-center gap-2">
+                        <FaClock className="text-[#1a3f6e]" /> {pacient.horario || "08:30 - 09:30"}
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <FaMapMarkerAlt className="text-[#1a3f6e]" /> {pacient.localidade || "Hospital Regional - Centro"}
+                      </p>
+                      {pacient.acessivel && (
+                        <p className="flex items-center gap-2">
+                          <FaWheelchair className="text-[#1a3f6e]" /> Transporte acessível
                         </p>
-                      </div>
+                      )}
                     </div>
                   </div>
-                );
-              })}
+                  <button
+                    onClick={() => {
+                      setIsOpen(true);
+                      setSelectedPacient(pacient);
+                    }}
+                    className="bg-[#00aaff] hover:bg-[#008ecc] text-white rounded-lg px-6 py-2 font-semibold transition flex items-center justify-center"
+                  >
+                    CONFIRMAR
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
         {/* --- Modal Motoristas --- */}
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <h2 className="text-xl font-bold mb-4">MOTORISTAS DISPONÍVEIS</h2>
-          <div className="space-y-3">
-            {drivers.data.map((driver) => {
-              let statusColor = "bg-green-500";
-              if (driver.status === "Em rota") statusColor = "bg-yellow-500";
+          <h2 className="text-2xl font-bold mb-4 text-center text-[#1a3f6e]">
+            Motoristas Disponíveis
+          </h2>
+
+          {/* Pesquisa */}
+          <div className="flex items-center gap-2 mb-4">
+            <FaSearch className="text-gray-500" />
+            <input
+              type="text"
+              value={searchDriver}
+              onChange={(e) => setSearchDriver(e.target.value)}
+              placeholder="Pesquisar motorista..."
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00aaff]"
+            />
+          </div>
+
+          {/* Lista de motoristas */}
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {filteredDrivers.map((driver) => {
+              let statusColor = "bg-green-500 animate-pulse";
+              if (driver.status === "Em rota") statusColor = "bg-yellow-400 animate-pulse";
               if (driver.status === "Ocupado") statusColor = "bg-red-500";
 
               return (
                 <div
                   key={driver.id}
-                  className="bg-white rounded-xl shadow-md px-4 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border border-gray-100"
+                  className="bg-[#e6f2ff] rounded-xl shadow-md px-5 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-200 hover:shadow-lg transition"
                 >
-                  <div className="flex flex-col">
-                    <span className="font-semibold">{driver.nome}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div>
+                      <span className="font-semibold text-gray-800 text-lg">{driver.nome}</span>
+                      <p className="text-gray-600 text-sm flex items-center gap-1">
+                        <FaCar /> {driver.veiculo || "Padrão"}
+                      </p>
+                      <p className="text-gray-600 text-sm">Telefone: {driver.telefone || "N/A"}</p>
+                    </div>
                     <span
-                      className={`text-sm px-2 py-0.5 rounded text-white text-xs ${statusColor}`}
+                      className={`mt-2 sm:mt-0 px-3 py-1 rounded-full text-white text-sm font-medium ${statusColor}`}
                     >
                       {driver.status || "Disponível"}
                     </span>
                   </div>
                   <button
                     onClick={() => escolherMotorista(driver)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2 transition"
+                    className="bg-[#00aaff] hover:bg-[#008ecc] text-white rounded-lg px-6 py-2 transition flex items-center gap-2"
                   >
-                    ESCOLHER
+                    <FaCheck /> ESCOLHER
                   </button>
                 </div>
               );
@@ -260,8 +247,8 @@ export default function DoctorPage() {
 
         {/* --- Notificação --- */}
         {notification && (
-          <div className="fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
-            Motorista escolhido com sucesso! 🚗
+          <div className="fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in flex items-center gap-2">
+            <FaCheckCircle /> {notification}
           </div>
         )}
       </main>

@@ -6,7 +6,7 @@ function HomeHeader() {
     <header>
       <div className='TopHeader'>
         <div className='LogoSection'>
-          <img src='hcs-logo.png' alt='Healthcare Systems Logo' />
+          <img src='medmovel-logo.png' alt='Medmóvel Logo' />
         </div>
         <ul>
           <div className='SearchSection'>

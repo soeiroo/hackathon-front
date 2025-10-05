@@ -59,12 +59,27 @@ ul {
   color: rgb(37, 8, 100);
   margin: 0 10px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  position: relative; /* necessário para o underline animado */
+  transition: color 0.3s ease;
+}
+
+.NavLinks a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 0;
+  height: 2px;
+  background-color: #303ce7; /* cor azul da linha */
+  transition: width 0.3s ease;
+}
+
+.NavLinks a:hover::after {
+  width: 100%;
 }
 
 .NavLinks a:hover {
   color: #303ce7;
-  transform: translateY(-1px);
 }
 
 header {
@@ -136,10 +151,25 @@ header {
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(48, 60, 231, 0.3);
+  position: relative;
+}
+
+.SearchSection button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 0;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+
+.SearchSection button:hover::after {
+  width: 100%;
 }
 
 .SearchSection button:hover {
-  background: linear-gradient(135deg, #2730d1, #4338ca);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(48, 60, 231, 0.4);
 }
@@ -166,10 +196,25 @@ header {
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  position: relative;
+}
+
+.PortalButton::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 0;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+
+.PortalButton:hover::after {
+  width: 100%;
 }
 
 .PortalButton:hover {
-  background: linear-gradient(135deg, #323535 0%, #455858 100%);
   transform: translateY(-2px);
 }
 

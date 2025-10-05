@@ -1,81 +1,41 @@
-.login-title {
-  margin-bottom: 1.5rem;
-  color: #333;
-  font-weight: 600;
-  font-size: 2rem;
-}
-
-.input {
-  padding: 0.7rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 1rem;
-  outline: none;
-  transition: border-color 0.2s;
-  margin-bottom: 0.5rem;
-}
-
-.input:focus {
-  border-color: #6366f1;
-}
-
-.signup-link {
-  color: #6366f1;
-  cursor: pointer;
-  font-weight: 500;
-  transition: text-decoration 0.2s;
-}
-
-.signup-link:hover {
-  text-decoration: underline;
-}
-html, body {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  padding: 0;
-}
-
+/* Container externo com fundo claro suave */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 100vh; /* full viewport height for full background */
-  background-color: #313131;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.100) 2px, transparent 0);
+  min-height: 100vh;
+  background-color: #e6f2f8; /* azul clarinho hospitalar */
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 2px, transparent 0);
   background-size: 30px 30px;
-  background-position: -5px -5px;
-  margin: 0;
-  padding: 2rem 0; /* some vertical breathing room */
+  padding: 2rem;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
+/* Caixa interna clara */
 .login-box {
-  background: #fff;
-  padding: 1rem 0.9rem; /* tighter padding */
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-  min-width: 260px;
-  max-width: 640px;
+  max-width: 400px;
   width: 90%;
+  background: #ffffff; /* fundo branco interno */
+  border-radius: 40px;
+  padding: 30px 35px;
+  box-shadow: rgba(133, 189, 215, 0.35) 0px 30px 30px -20px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
 }
 
-.login-box h2 {
-  margin-bottom: 0.8rem;
+/* Título */
+.login-title {
+  margin-bottom: 1.5rem;
   color: #333;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 2rem;
+  text-align: center;
 }
 
+/* Grupos de inputs */
 .input-group {
   width: 100%;
   margin-bottom: 0.6rem;
@@ -90,22 +50,23 @@ body {
 }
 
 .input-group input {
-  padding: 0.45rem 0.75rem;
+  padding: 0.7rem 1rem;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  border-radius: 8px;
+  font-size: 1rem;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .input-group input:focus {
-  border-color: #6366f1;
+  border-color: #4f8cff; /* tom azul hospitalar */
 }
 
+/* Botões */
 .login-button {
   width: 100%;
   padding: 0.6rem;
-  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+  background: linear-gradient(90deg, #4f8cff 0%, #60a5fa 100%);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -113,7 +74,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   margin-top: 0.5rem;
-  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+  box-shadow: 0 2px 8px rgba(79, 140, 255, 0.15);
   background-size: 200% 100%;
   background-position: right;
   transition: background-position 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s, transform 0.2s;
@@ -122,39 +83,21 @@ body {
 .login-button:hover,
 .login-button:focus {
   background-position: left;
-  box-shadow: 0 4px 16px rgba(99,102,241,0.18);
+  box-shadow: 0 4px 16px rgba(79, 140, 255, 0.25);
   transform: scale(1.01);
 }
 
-.login-btn {
-  background: linear-gradient(90deg, #4f8cff 0%, #6ee7b7 100%);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 32px;
-  font-size: 1rem;
-  cursor: pointer;
-  background-size: 200% 100%;
-  background-position: right;
-  transition: background-position 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(79, 140, 255, 0.15);
-}
-
-.login-btn:hover,
-.login-btn:focus {
-  background-position: left;
-  box-shadow: 0 4px 16px rgba(79, 140, 255, 0.25);
-}
-
+/* Link para alternar entre login e registro */
 .signup-text {
   margin-top: 1.2rem;
   margin-bottom: 0;
-  color: #888;
+  color: #555;
   font-size: 0.95rem;
+  text-align: center;
 }
 
 .signup-text span {
-  color: #6366f1;
+  color: #4f8cff;
   cursor: pointer;
   font-weight: 500;
   transition: text-decoration 0.2s;
@@ -164,7 +107,7 @@ body {
   text-decoration: underline;
 }
 
-/* Two-column layout used for registration fields */
+/* Layout duas colunas para campos de registro */
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -173,17 +116,16 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* Make inputs span full width on small screens */
 @media (max-width: 640px) {
   .two-col {
     grid-template-columns: 1fr;
   }
   .login-box {
-    padding: 1rem;
+    padding: 1rem 1.2rem;
   }
 }
 
-/* success / error message styles */
+/* Mensagens de sucesso / erro */
 .success-message {
   background: #ecfdf5;
   color: #065f46;
@@ -192,6 +134,7 @@ body {
   margin-bottom: 0.75rem;
   text-align: center;
 }
+
 .error-message {
   background: #ffefef;
   color: #7f1d1d;

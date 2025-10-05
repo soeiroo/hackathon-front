@@ -5,7 +5,7 @@ import axios from "axios";
 const agendamentosFetchInit = 'AGENDAMENTOS_FETCH_INIT'
 const agendamentosFetchSuccess = 'AGENDAMENTOS_FETCH_SUCCESS'
 const agendamentosFetchFailure = 'AGENDAMENTOS_FETCH_FAILURE'
-const AGENDAMENTOS_QUERY = 'https://supraorbital-unindemnified-ettie.ngrok-free.dev/agendamentos'
+const AGENDAMENTOS_QUERY = 'https://hamza-malacoid-vanesa.ngrok-free.dev/agendamentos'
 
 const agendamentosReducer = (state,action) => {
     switch(action.type){
@@ -41,8 +41,9 @@ export default function PacientPage() {
         <header>
             <NavBar />
         </header>
-        <h2 className="text-center text-3xl text-white bg-black mt-20 w-100 ml-20">AGENDE SUA CORRIDA</h2>
+        <div className="flex justify-around" >
         <form className="w-40 ml-20 mt-5">
+            <h2 className="text-center text-3xl text-white bg-black mt-20 w-100 mb-5">AGENDE SUA CORRIDA</h2>
             <p className="text-xl text-center  bg-black text-white">DATA</p>
             <input className="bg-white rounded-md w-100 "  type="text" />
 
@@ -56,11 +57,18 @@ export default function PacientPage() {
             <input className="bg-white rounded-md w-100" type="text" />
             
         </form>
-        <section className="bg-white rounded-xl my-20">
-            <h2 className="text-center text-3xl text-black mt-5">AGENDAMENTOS</h2>
-            <p className="text-center text-xl text-black mt-5">Abaixo estão listados todos os seus agendamentos</p>
-            
+        <section className="rounded-xl bg-black  w-lg mt-22">
+            <h2 className="text-center text-3xl text-white mt-5">AGENDAMENTOS</h2>
+            <p className="text-center text-xl text-white mt-5">Abaixo estão listados todos os seus agendamentos</p>
+            {agendamentos.data.slice(0, 5).map((agendamento) => {
+                return (
+                    <section key={agendamento.key}>
+                        <p className="bg-white text-black rounded-md mt-10 px-10 py-5 flex flex-row justify-between items-center">{agendamento.motivo}</p>
+                    </section>
+                )
+            })}
         </section>
+        </div>
         </>
     )
 }

@@ -19,6 +19,13 @@ const agendamentosReducer = (state, action) => {
       return { ...state, loading: false, data: action.payload };
     case "FETCH_FAILURE":
       return { ...state, loading: false, error: true };
+    case "CONFIRM_AGENDAMENTO":
+      return {
+        ...state,
+        data: state.data.map((a) =>
+          a.id === action.payload ? { ...a, confirmado: true } : a
+        ),
+      };
     default:
       return state;
   }
@@ -32,7 +39,6 @@ export default function DoctorPage() {
   });
 
   const [drivers, setDrivers] = useState([
-    // Motoristas mockados
     { id: 1, nome: "João", veiculo: "Carro Padrão", telefone: "9999-0000", status: "Disponível" },
     { id: 2, nome: "Maria", veiculo: "Van", telefone: "8888-1111", status: "Em rota" },
     { id: 3, nome: "Carlos", veiculo: "Carro Padrão", telefone: "7777-2222", status: "Ocupado" },
@@ -47,18 +53,29 @@ export default function DoctorPage() {
   useEffect(() => {
     dispatchAgendamentos({ type: "FETCH_INIT" });
     const stored = JSON.parse(localStorage.getItem("agendamentos")) || [];
-    // Adiciona nome da paciente "Úrsula" a cada agendamento
-    const withPatientName = stored.map((item) => ({ ...item, nomepaciente: "Úrsula" }));
+    const withPatientName = stored.map((item) => ({
+      ...item,
+      nomepaciente: "Úrsula",
+      confirmado: item.confirmado || false,
+    }));
     dispatchAgendamentos({ type: "FETCH_SUCCESS", payload: withPatientName });
   }, []);
 
   const escolherMotorista = (driver) => {
     setIsOpen(false);
     if (selectedAgendamento) {
+      dispatchAgendamentos({ type: "CONFIRM_AGENDAMENTO", payload: selectedAgendamento.id });
       setNotification(
-        `Paciente ${selectedAgendamento.nomepaciente} com motorista ${driver.nome} escolhido!`
+        `Paciente ${selectedAgendamento.nomepaciente} confirmado com motorista ${driver.nome}!`
       );
       setSelectedAgendamento(null);
+
+      // Atualiza localStorage
+      const stored = JSON.parse(localStorage.getItem("agendamentos")) || [];
+      const updated = stored.map((a) =>
+        a.id === selectedAgendamento.id ? { ...a, confirmado: true } : a
+      );
+      localStorage.setItem("agendamentos", JSON.stringify(updated));
     }
     setTimeout(() => setNotification(null), 3000);
   };
@@ -69,6 +86,9 @@ export default function DoctorPage() {
       const statusOrder = { "Disponível": 0, "Em rota": 1, "Ocupado": 2 };
       return (statusOrder[a.status] || 3) - (statusOrder[b.status] || 3);
     });
+
+  const aConfirmar = agendamentos.data.filter((a) => !a.confirmado);
+  const confirmados = agendamentos.data.filter((a) => a.confirmado);
 
   return (
     <>
@@ -82,45 +102,73 @@ export default function DoctorPage() {
             Painel de Controle
           </h1>
 
-          {agendamentos.loading ? (
-            <p className="text-center text-gray-500">Carregando agendamentos...</p>
-          ) : agendamentos.error ? (
-            <p className="text-center text-red-500">Erro ao carregar agendamentos.</p>
+          {/* --- A Confirmar --- */}
+          <h2 className="text-xl font-semibold text-[#1a3f6e] mb-4">Agendamentos a Confirmar</h2>
+          {aConfirmar.length === 0 ? (
+            <p className="text-gray-500 mb-6">Nenhum agendamento a confirmar.</p>
           ) : (
-            <div className="space-y-5">
-              {agendamentos.data.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-xl shadow-md px-8 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-100 hover:shadow-lg transition"
-                >
-                  <div className="flex flex-col gap-2">
-                    <span className="font-bold text-lg text-[#1a3f6e]">{item.nomepaciente}</span>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+            aConfirmar.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-xl shadow-md px-8 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-100 hover:shadow-lg transition mb-4"
+              >
+                <div className="flex flex-col gap-2">
+                  <span className="font-bold text-lg text-[#1a3f6e]">{item.nomepaciente}</span>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <p className="flex items-center gap-2">
+                      <FaClock className="text-[#1a3f6e]" /> {item.data} às {item.hora}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-[#1a3f6e]" /> {item.localidade}
+                    </p>
+                    {item.acessivel && (
                       <p className="flex items-center gap-2">
-                        <FaClock className="text-[#1a3f6e]" /> {item.data} às {item.hora}
+                        <FaWheelchair className="text-[#1a3f6e]" /> Transporte acessível
                       </p>
-                      <p className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-[#1a3f6e]" /> {item.localidade}
-                      </p>
-                      {item.acessivel && (
-                        <p className="flex items-center gap-2">
-                          <FaWheelchair className="text-[#1a3f6e]" /> Transporte acessível
-                        </p>
-                      )}
-                    </div>
+                    )}
                   </div>
-                  <button
-                    onClick={() => {
-                      setIsOpen(true);
-                      setSelectedAgendamento(item);
-                    }}
-                    className="bg-[#00aaff] hover:bg-[#008ecc] text-white rounded-lg px-6 py-2 font-semibold transition flex items-center justify-center"
-                  >
-                    CONFIRMAR
-                  </button>
                 </div>
-              ))}
-            </div>
+                <button
+                  onClick={() => {
+                    setIsOpen(true);
+                    setSelectedAgendamento(item);
+                  }}
+                  className="bg-[#00aaff] hover:bg-[#008ecc] text-white rounded-lg px-6 py-2 font-semibold transition flex items-center justify-center"
+                >
+                  CONFIRMAR
+                </button>
+              </div>
+            ))
+          )}
+
+          {/* --- Confirmados --- */}
+          <h2 className="text-xl font-semibold text-[#1a3f6e] mb-4 mt-8">Agendamentos Confirmados</h2>
+          {confirmados.length === 0 ? (
+            <p className="text-gray-500">Nenhum agendamento confirmado ainda.</p>
+          ) : (
+            confirmados.map((item) => (
+              <div
+                key={item.id}
+                className="bg-green-50 rounded-xl shadow-md px-8 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-green-200 mb-4"
+              >
+                <div className="flex flex-col gap-2">
+                  <span className="font-bold text-lg text-green-700">{item.nomepaciente}</span>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <p className="flex items-center gap-2">
+                      <FaClock className="text-green-700" /> {item.data} às {item.hora}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-green-700" /> {item.localidade}
+                    </p>
+                    {item.acessivel && (
+                      <p className="flex items-center gap-2">
+                        <FaWheelchair className="text-green-700" /> Transporte acessível
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
           )}
         </div>
 
@@ -138,9 +186,7 @@ export default function DoctorPage() {
                 Motoristas Disponíveis
               </h2>
 
-              {/* Pesquisa */}
               <div className="flex items-center gap-2 mb-4">
-                <FaSearch className="text-gray-500" />
                 <input
                   type="text"
                   value={searchDriver}

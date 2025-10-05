@@ -9,12 +9,12 @@ function HomeHeader() {
           <img src='medmovel-logo.png' alt='Medmóvel Logo' />
         </div>
         <ul>
-          <div className='SearchSection'>
+          {/* <div className='SearchSection'>
             <form>
               <input type="text" placeholder="Pesquisar..." />
               <button type="submit">Buscar</button>
             </form>
-          </div>
+          </div> */}
           
           <div className='PortalSection'>
             <Link to="/login" className='PortalButton'>
@@ -23,7 +23,7 @@ function HomeHeader() {
           </div>
         </ul>
       </div>
-      <nav>
+      {/* <nav>
         <ul className='NavLinks'>
             <li><Link to="/">Início</Link></li>
             <li><Link to="/services">Serviços</Link></li>
@@ -32,7 +32,7 @@ function HomeHeader() {
             <li><Link to="/testimonials">Cases</Link></li>
             <li><Link to="/contact">Contato Comercial</Link></li>
         </ul>
-      </nav>
+      </nav> */}
       <div className='HeaderLine'></div>
     </header>
   );

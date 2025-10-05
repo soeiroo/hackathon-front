@@ -6,6 +6,7 @@ import {
   FaFileMedical,
   FaMapMarkerAlt,
   FaClipboard,
+  FaTrash,
 } from "react-icons/fa";
 
 const initialState = {
@@ -22,6 +23,11 @@ function agendamentosReducer(state, action) {
       return { ...state, loading: false, data: action.payload };
     case "FETCH_FAILURE":
       return { ...state, loading: false, error: true };
+    case "REMOVE_AGENDAMENTO":
+      return {
+        ...state,
+        data: state.data.filter((a) => a.id !== action.payload),
+      };
     default:
       return state;
   }
@@ -47,7 +53,12 @@ export default function PacientPage() {
   useEffect(() => {
     dispatchAgendamentos({ type: "FETCH_INIT" });
     const stored = JSON.parse(localStorage.getItem("agendamentos")) || [];
-    dispatchAgendamentos({ type: "FETCH_SUCCESS", payload: stored });
+    const withStatus = stored.map((item) => ({
+      ...item,
+      nomepaciente: patientName,
+      confirmado: item.confirmado || false,
+    }));
+    dispatchAgendamentos({ type: "FETCH_SUCCESS", payload: withStatus });
   }, []);
 
   const handleSubmit = (e) => {
@@ -55,6 +66,8 @@ export default function PacientPage() {
     const novo = {
       id: Date.now(),
       ...form,
+      nomepaciente: patientName,
+      confirmado: false,
     };
 
     const stored = JSON.parse(localStorage.getItem("agendamentos")) || [];
@@ -74,6 +87,13 @@ export default function PacientPage() {
     });
   };
 
+  const handleCancelar = (id) => {
+    const stored = JSON.parse(localStorage.getItem("agendamentos")) || [];
+    const updated = stored.filter((a) => a.id !== id);
+    localStorage.setItem("agendamentos", JSON.stringify(updated));
+    dispatchAgendamentos({ type: "REMOVE_AGENDAMENTO", payload: id });
+  };
+
   return (
     <>
       <PatientNavBar />
@@ -83,8 +103,8 @@ export default function PacientPage() {
           onSubmit={handleSubmit}
           className="flex-1 bg-white shadow rounded-2xl p-8 space-y-6 border border-gray-200 max-w-md mx-auto"
         >
-          <h1 className="text-[20px] font-semibold text-gray-800 text-center mb-4">
-            Olá, {patientName}! Agende seu transporte          
+          <h1 className="text-2xl font-semibold text-gray-800 text-center mb-4">
+            Olá, {patientName}! Agende seu transporte
           </h1>
 
           {/* Data */}
@@ -177,15 +197,32 @@ export default function PacientPage() {
               {agendamentos.data.map((item) => (
                 <li
                   key={item.id}
-                  className="border rounded-lg p-3 flex flex-col md:flex-row justify-between gap-2"
+                  className="border rounded-lg p-3 flex flex-col md:flex-row justify-between items-center gap-2"
                 >
-                  <div>
+                  <div className="flex flex-col">
                     <p className="font-medium">
                       {item.data} às {item.hora}
                     </p>
                     <p className="text-sm text-gray-600">{item.motivo}</p>
                   </div>
-                  <p className="text-sm text-gray-500">{item.localidade}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-gray-500">{item.localidade}</p>
+                    <span
+                      className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                        item.confirmado
+                          ? "bg-green-100 text-green-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {item.confirmado ? "Confirmado" : "A Confirmar"}
+                    </span>
+                    <button
+                      onClick={() => handleCancelar(item.id)}
+                      className="text-red-600 hover:text-red-800 text-sm px-2 py-1 border border-red-600 rounded-lg transition"
+                    >
+                      <div  className="flex items-center gap-1"><FaTrash /> <span>Cancelar</span></div>
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

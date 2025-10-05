@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/LoginForm.module.css';
-import { useNavigate } from 'react-router';
-import { addUser, loginByCpf, resetPassword as resetPwd } from '../utils/apiClient';
+import { Navigate, useNavigate } from 'react-router';
+import { addUser, loginByCpf } from '../utils/apiClient';
 import { MOCK_DOCTOR, MOCK_PATIENT } from '../utils/mockUsers';
+import { Link } from 'react-router';
 
 
 function LoginRegisterForm (){
@@ -79,7 +80,8 @@ function LoginRegisterForm (){
       setCpf(creds.cpf);
       setPassword(creds.password);
       const res = await loginByCpf(creds.cpf, creds.password);
-      setMessage(res?.message || `Logado como ${creds.nome}`);
+      navigate(who === 'doctor' ? '/testmedico' : '/testpaciente');
+      setMessage(res?.message || 'Login realizado (mock).');
     } catch (err) {
       console.error('Mock login failed', err);
       const msg = err?.response?.data?.message || err?.message || 'Erro no login (mock)';
@@ -89,23 +91,7 @@ function LoginRegisterForm (){
     }
   };
 
-  const handleReset = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
-    setError('');
-    try {
-  const res = await resetPwd(resetEmail);
-  setMessage(res?.message || 'E-mail de reset enviado!');
-      setShowReset(false);
-      setResetEmail('');
-    } catch (error) {
-      const msg = error?.response?.data?.message || error.message || 'Erro ao enviar e-mail de reset';
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   return (
     <div className={styles.container}>
@@ -191,9 +177,12 @@ function LoginRegisterForm (){
             {isRegister ? "Cadastrar" : "Entrar"}
           </button>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+          
             <button type='button' className={styles['login-button']} onClick={() => handleMockLogin('doctor')}>
               Entrar como Médico (mock)
             </button>
+          
+
             <button type='button' className={styles['login-button']} onClick={() => handleMockLogin('patient')}>
               Entrar como Paciente (mock)
             </button>
@@ -209,7 +198,7 @@ function LoginRegisterForm (){
           </p>
         </form>
       ) : (
-        <form onSubmit={handleReset} className={styles['login-box']}>
+        <form onSubmit={""} className={styles['login-box']}>
           <h2 className={styles['login-title']}>Resetar senha</h2>
           <div className={styles['input-group']}>
             <label htmlFor='resetEmail'>Digite seu e-mail:</label>

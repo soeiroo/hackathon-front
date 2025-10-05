@@ -7,8 +7,8 @@ function HomePage() {
     <div>
       <HomeHeader />
       <div className="HomeContent">
-        <h1>Dedicados à sua saúde, guiados pela compaixão e comprometidos com a excelência no cuidado.</h1>
-        <p>Em nosso hospital, acreditamos que todo paciente merece mais do que tratamento — merece compreensão, respeito e cuidado genuíno. Com tecnologia avançada, profissionais capacitados e uma abordagem compassiva, estamos aqui para apoiar você e sua família em todas as fases da vida.</p>
+        <h1>Transporte seguro e acessível para pacientes e hospitais.</h1>
+        <p>Conectamos hospitais e pacientes com motoristas treinados, garantindo deslocamentos confiáveis, confortáveis e pontuais. Nosso sistema facilita agendamentos, otimiza rotas e promove maior eficiência no atendimento hospitalar.</p>
       </div>
       <Footer />
     </div>

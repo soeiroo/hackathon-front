@@ -28,10 +28,12 @@ function HomeHeader() {
       </div>
       <nav>
         <ul className='NavLinks'>
-          <li><Link to="/donate">Doar Agora</Link></li>
-          <li><Link to="/about">Sobre Câncer & Tratamento</Link></li>
-          <li><Link to="/">Agendar Consulta</Link></li>
-          <li><Link to="/services">Serviços</Link></li>
+            <li><Link to="/">Início</Link></li>
+            <li><Link to="/services">Serviços</Link></li>
+            <li><Link to="/how-it-works">Como Funciona</Link></li>
+            <li><Link to="/plans">Planos & Preços</Link></li>
+            <li><Link to="/testimonials">Cases</Link></li>
+            <li><Link to="/contact">Contato Comercial</Link></li>
         </ul>
       </nav>
       <div className='HeaderLine'></div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { addUser, loginByCpf, resetPassword as resetPwd } from '../utils/apiClient';
+import { addUser, loginByCpf} from '../utils/apiClient';
 import { AuthContext } from './authContextValue';
 
 export function AuthProvider({ children }) {
@@ -31,15 +31,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const resetPassword = async (email) => {
-    setLoading(true);
-    try {
-      const res = await resetPwd(email);
-      return res;
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const logout = () => {
     // no token to remove in credential-only auth
@@ -47,7 +38,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, resetPassword, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

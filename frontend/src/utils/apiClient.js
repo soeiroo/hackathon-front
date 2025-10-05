@@ -3,6 +3,6 @@
 // the import to this .js file (which would cause a circular reference).
 // Explicitly import named exports and re-export them. This makes it clear to
 // the bundler which symbols are available and avoids ambiguous wildcard re-exports.
-import { addUser, loginByCpf, resetPassword } from './apiClient.tsx';
-export { addUser, loginByCpf, resetPassword };
+import { addUser, loginByCpf} from './apiClient.tsx';
+export { addUser, loginByCpf };
 export { default } from './apiClient.tsx';

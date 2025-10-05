@@ -1,7 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
+import { MOCK_DOCTOR, MOCK_PATIENT } from './mockUsers';
+import { Link } from 'react-router';
 
-// Exact base URL requested
-const BASE = 'https://supraorbital-unindemnified-ettie.ngrok-free.dev';
+// Exact base URL requested (kept for other API calls like register/reset)
+const BASE = 'localhost:1441';
 
 const api: AxiosInstance = axios.create({
   baseURL: BASE,
@@ -45,24 +47,21 @@ export const addUser = async (userData: UserData): Promise<any> => {
  * Login by CPF (credential-only)
  */
 export async function loginByCpf(cpf: string, password: string): Promise<any> {
-  try {
-    const res = await api.post('/auth/login', { cpf, password });
-    return res.data;
-  } catch (err: any) {
-    const msg = err?.response?.data?.message || err?.message || 'Erro no login';
-    throw { message: msg, original: err };
+  // Use only mock credentials for login to avoid calling the backend/database.
+  // This intentionally bypasses any network request and returns a local user object.
+  const candidates = [MOCK_DOCTOR, MOCK_PATIENT];
+  const found = candidates.find((u) => u.cpf === cpf && u.password === password);
+  console.log(found);
+  if (found) {
+    // Return a copy without password
+    const { password, ...userNoPass } = found;
+    return userNoPass;
   }
+  // Keep error shape simple; callers typically read error.message
+  throw new Error('CPF ou senha inválidos');
 }
 
-export async function resetPassword(email: string): Promise<any> {
-  try {
-    const res = await api.post('/auth/reset-password', { email });
-    return res.data;
-  } catch (err: any) {
-    const msg = err?.response?.data?.message || err?.message || 'Erro no reset';
-    throw { message: msg, original: err };
-  }
-}
+
 
 export default api;
 

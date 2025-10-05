@@ -15,10 +15,7 @@ function HomeHeader() {
               <button type="submit">Buscar</button>
             </form>
           </div>
-          <li>Pesquisa</li>
-          <li>Educação & Treinamento</li>
-          <li>Contato</li>
-          <li>Ajuda</li>
+          
           <div className='PortalSection'>
             <Link to="/login" className='PortalButton'>
               Portal

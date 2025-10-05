@@ -76,6 +76,26 @@ body {
   }
 }
 
+@media (max-width: 1200px) {
+  .HomeContent h1 {
+    font-size: 2.5rem;
+  }
+  
+  .HomeContent p {
+    font-size: 1rem;
+  }
+
+}
+@media (max-width: 992px) {
+  .HomeContent h1 {
+    font-size: 2.5rem;
+  }
+  
+  .HomeContent p {
+    font-size: 1rem;
+  }
+}
+
 @media (max-width: 480px) {
   .HomeContent h1 {
     font-size: 1.5rem;

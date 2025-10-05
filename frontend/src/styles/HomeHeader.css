@@ -38,8 +38,9 @@ nav {
 ul {
   margin: 0;
   padding: 0;
+  
   list-style: none;
-  gap: 10px;
+  gap: 0px;
 }
 
 .NavLinks {
@@ -103,7 +104,6 @@ header {
   display: flex;
   align-items: center;
   margin-right: 20px;
-  gap: 8px;
 }
 
 .SearchSection form {
@@ -131,7 +131,7 @@ header {
   font-size: 14px;
   background: transparent;
   color: #333;
-  width: 390px;
+  width: 325px;
   font-family: inherit;
 }
 
@@ -194,7 +194,6 @@ header {
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
   white-space: nowrap;
   position: relative;
 }
@@ -250,8 +249,7 @@ header {
   
   .TopHeader {
     flex-direction: row;
-    justify-content: space-between;
-    gap: 5px;
+    
   }
   
   .PortalSection {
